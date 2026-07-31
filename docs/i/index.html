@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open in Mr. Lister</title>
+  <style>
+    :root {
+      --teal: #0d9488;
+      --teal-dark: #0f766e;
+      --paper: #f3f5f2;
+      --slate: #334155;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(160deg, #e2f5f1 0%, var(--paper) 55%, #fff 100%);
+      color: var(--slate);
+    }
+    .card {
+      width: min(420px, 100%);
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 12px 32px rgba(13, 148, 136, 0.12);
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.45rem;
+      color: var(--teal-dark);
+    }
+    p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px 16px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--teal);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn:active { background: var(--teal-dark); }
+    .store {
+      display: inline-block;
+      margin-top: 14px;
+      color: var(--teal-dark);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .err { color: #b91c1c; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Mr. Lister</h1>
+    <p id="status">Opening your shared list…</p>
+    <a id="open" class="btn" href="#">Open in Mr. Lister</a>
+    <a
+      class="store"
+      href="https://play.google.com/store/apps/details?id=in.silverspectre.mr_lister"
+      >Get the app on Play Store</a
+    >
+  </main>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var payload = params.get("d") || "";
+      var statusEl = document.getElementById("status");
+      var openEl = document.getElementById("open");
+
+      if (!payload) {
+        statusEl.textContent =
+          "This link is missing list data. Ask the sender to share again.";
+        statusEl.className = "err";
+        openEl.style.display = "none";
+        return;
+      }
+
+      var deep =
+        "mrlister://import/v1?d=" + encodeURIComponent(payload);
+      // Android intent fallback opens the app package when possible.
+      var intent =
+        "intent://import/v1?d=" +
+        encodeURIComponent(payload) +
+        "#Intent;scheme=mrlister;package=in.silverspectre.mr_lister;" +
+        "S.browser_fallback_url=" +
+        encodeURIComponent(
+          "https://play.google.com/store/apps/details?id=in.silverspectre.mr_lister"
+        ) +
+        ";end";
+
+      openEl.href = deep;
+
+      var ua = navigator.userAgent || "";
+      var isAndroid = /Android/i.test(ua);
+      window.location.replace(isAndroid ? intent : deep);
+
+      setTimeout(function () {
+        statusEl.textContent =
+          "If the app did not open, tap the button below.";
+      }, 900);
+    })();
+  </script>
+</body>
+</html>
