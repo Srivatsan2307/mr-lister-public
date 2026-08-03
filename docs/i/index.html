@@ -107,6 +107,14 @@
 
       openEl.href = deep;
 
+      // Clipboard backup: if the OS opens the app without VIEW data, resume
+      // still imports from the copied HTTPS (or deep) link.
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(window.location.href);
+        }
+      } catch (e) {}
+
       var ua = navigator.userAgent || "";
       var isAndroid = /Android/i.test(ua);
       window.location.replace(isAndroid ? intent : deep);
